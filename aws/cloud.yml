@@ -10,7 +10,7 @@
       }
     },
     "Security":{
-      "Type": "AWS::EC2::SecurotyGroup",
+      "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Enable SSH Access Port",
         "SecurityGroupIngress": [
