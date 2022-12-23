@@ -1,0 +1,17 @@
+---
+- name: Update Yum
+  yum:
+   name: "*"
+   state: latest
+
+- name: "Install Appach"
+  yum:
+    name: "httpd"
+    state: latest
+    update_cache: yes
+
+- name: "CopyFiles"
+  copy:
+    src: index.html
+    dest: /var/www/html/index.html
+    backup: yes  
