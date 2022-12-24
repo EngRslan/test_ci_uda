@@ -13,6 +13,24 @@ jobs:
       - run:
           name: Create cloud formation stack
           command: "aws cloudformation deploy --template-file aws/cloud.yml --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} --region us-east-1"
+  
+  Configure_Servers:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "6d:42:f9:d7:af:8c:06:8f:16:41:2c:22:28:f4:02:8b"
+      - run: 
+          name: Install Ansible
+          command: "apk add --update ansible"
+      - run: 
+          name: Get Public ips
+          command: "aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ansi/inventory.txt"
+      - run:
+          name: Install playbook
+          command: "ansible-playbook -i ansi/inventory.txt ansi/main.yml"
         
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -20,4 +38,7 @@ workflows:
   say-prod-with-ansi:
     jobs:
       - create_infrastructure
+      - Configure_Servers:
+          requires:
+            - "create_infrastructure"
       
