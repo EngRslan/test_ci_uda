@@ -49,7 +49,7 @@ jobs:
 
       - run:
           name: Install playbook
-          command: "sudo ansible-playbook -i ~/inventory.txt ansi/main.yml"
+          command: "sudo ansible-playbook -i ~/inventory.txt ansi/main.yml --private-key=ansi/ansi.pem"
       - destroy_environment
         
 # Invoke jobs via workflows
