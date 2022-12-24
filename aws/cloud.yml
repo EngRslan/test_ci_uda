@@ -7,7 +7,7 @@
         "KeyName": "ansi",
         "ImageId": "ami-0574da719dca65348",
         "InstanceType": "t2.micro",
-        "SecurityGroups": [
+        "SecurityGroupIds": [
           {"Ref":"Security"}
         ]
       }
