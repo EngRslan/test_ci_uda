@@ -2,6 +2,13 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+commands:
+  destroy_env:
+    steps:
+      - run:
+          name: "Destroy environment"
+          command: "aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}"
+          when: on_fail
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -23,10 +30,11 @@ jobs:
           root: ~/
           paths: 
             - "inventory.txt"
+      - destroy_environment
   
   Configure_Servers:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/python:3.11.1
     steps: 
       - checkout
       - add_ssh_keys:
@@ -34,7 +42,7 @@ jobs:
             - "6d:42:f9:d7:af:8c:06:8f:16:41:2c:22:28:f4:02:8b"
       - run: 
           name: Install Ansible
-          command: "apk add --update ansible"
+          command: "apt install ansible -y"
 
       - attach_workspace:
           at: ~/
@@ -42,6 +50,7 @@ jobs:
       - run:
           name: Install playbook
           command: "ansible-playbook -i ~/inventory.txt ansi/main.yml"
+      - destroy_environment
         
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
