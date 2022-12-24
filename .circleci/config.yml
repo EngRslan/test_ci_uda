@@ -3,7 +3,7 @@
 version: 2.1
 
 commands:
-  destroy_env:
+  destroy_environment:
     steps:
       - run:
           name: "Destroy environment"
