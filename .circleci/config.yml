@@ -27,7 +27,7 @@ jobs:
   Configure_Servers:
     docker:
       - image: python:3.7-alpine3.11
-    steps:
+    steps: 
       - checkout
       - add_ssh_keys:
           fingerprints:
