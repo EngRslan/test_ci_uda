@@ -51,7 +51,20 @@ jobs:
           name: Install playbook
           command: "sudo ansible-playbook -i ~/inventory.txt ansi/main.yml --private-key=ansi/ansi.pem"
       - destroy_environment
-        
+
+  smoke_test:
+    docker:
+       - image: alpine:latest
+    steps:
+      - run: apk add --update curl
+      - run: |
+          Url="https://blog.udacity.com/"
+          if curl -s --head ${Url}
+          then
+            return 0
+          else
+            return 1
+          fi
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
