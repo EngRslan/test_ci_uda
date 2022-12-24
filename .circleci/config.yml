@@ -42,7 +42,7 @@ jobs:
             - "6d:42:f9:d7:af:8c:06:8f:16:41:2c:22:28:f4:02:8b"
       - run: 
           name: Install Ansible
-          command: "sudo apt install ansible -y"
+          command: "sudo apt update && sudo apt upgrade && sudo apt install ansible -y"
 
       - attach_workspace:
           at: ~/
