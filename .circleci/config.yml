@@ -74,4 +74,6 @@ workflows:
       - Configure_Servers:
           requires:
             - "create_infrastructure"
-      
+      - smoke_test:
+          requires:
+            - "Configure_Servers"
