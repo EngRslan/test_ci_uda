@@ -41,7 +41,7 @@ jobs:
 
       - run:
           name: Install playbook
-          command: "ansible-playbook -i ~/inventory.txt ansi/main.yml"
+          command: "sudo ansible-playbook -i ~/inventory.txt ansi/main.yml --private-key=ansi/ansi.pem"
         
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
