@@ -18,7 +18,7 @@ jobs:
           command: "aws cloudformation deploy --template-file aws/cloud.yml --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} --region us-east-1"
       - run: 
           name: Get Public ips
-          command: "echo -e '[all]\n' >> ~/inventory.txt && aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> ~/inventory.txt"
+          command: "echo -e '[all]\n' >> ~/inventory.txt && aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --filters 'Name=tag:Name,Values=uda'  --output text >> ~/inventory.txt"
       - persist_to_workspace:
           root: ~/
           paths: 

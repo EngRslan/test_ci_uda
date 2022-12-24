@@ -9,6 +9,13 @@
         "InstanceType": "t2.micro",
         "SecurityGroupIds": [
           {"Ref":"Security"}
+        ],
+        "Tags":
+        [
+          {
+              "Key":"Name",
+              "Value":"uda" 
+          }
         ]
       }
     },
