@@ -65,15 +65,87 @@ jobs:
           else
             return 1
           fi
+
+  create_deploy_front_end:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: "Create New Bucket"
+          command: |
+            aws cloudformation deploy \
+            --stack-name TestBucket \
+            --template-file "aws/bucket.aws.json" \
+            --parameter-overrides BucketName="mybucket-${CIRCLE_WORKFLOW_ID:0:7}"
+      - run: "aws s3 sync . s3://mybucket-${CIRCLE_WORKFLOW_ID:0:7} --delete"
+  
+  get_last_deployment_id:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: yum install -y tar gzip
+      - run:
+          name: "Get From Aws"
+          command: |
+            aws cloudformation \
+            list-exports --query "Exports[?Name==\`PipelineId\`].Value" \
+            --no-paginate --output text >> ~/textfile.txt
+      - persist_to_workspace:
+           root: ~/
+           paths:
+            - textfile.txt
+
+  promote_to_production:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: "Ececute new CloudFront"
+          command: |
+            aws cloudformation deploy \
+            --template-file aws/cloudfront.aws.json \
+            --stack-name production-distro \
+            --parameter-overrides PipelineId="mybucket-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople 
+
+  clean_up_old_front_end:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: yum install -y tar gzip
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Destroy the previous S3 bucket and CloudFormation stack. 
+          command: |
+            export OldBucketID=$(cat ~/textfile.txt)
+            aws s3 rm "s3://${OldBucketID}" --recursive
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   say-prod-with-ansi:
     jobs:
-      - create_infrastructure
-      - Configure_Servers:
+      # - create_infrastructure
+      # - Configure_Servers:
+      #     requires:
+      #       - "create_infrastructure"
+      # - smoke_test:
+      #     requires:
+      #       - "Configure_Servers"
+      - create_deploy_front_end
+      - promote_to_production:
           requires:
-            - "create_infrastructure"
-      - smoke_test:
+            - create_deploy_front_end
+      - get_last_deployment_id:
           requires:
-            - "Configure_Servers"
+            - promote_to_production
+      - clean_up_old_front_end:
+          requires:
+            - get_last_deployment_id
+            - promote_to_production
+
+# VS Code Extension Version: 1.5.0

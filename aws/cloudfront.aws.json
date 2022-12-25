@@ -20,10 +20,10 @@
         "DistributionConfig":{
           "Origins":[
             {
-              "DomainName":{"Fn::Sub":["${PipelineID}.s3.amazonaws.com",{"PipelineID":{"Ref":"PipelineId"}}]},
-              "Id":"Webpage",
+              "DomainName":{"Fn::Sub":"${PipelineId}.s3.amazonaws.com"},
+              "Id":{"Ref":"PipelineId"},
               "S3OriginConfig":{
-                "OriginAccessIdentity": {"Fn::Sub":["origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}",{"CloudFrontOriginAccessIdentity":{"Ref":"CloudFrontOriginAccessIdentity"}}]}
+                "OriginAccessIdentity": {"Fn::Sub": "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"}
               }
             }
           ],
@@ -33,7 +33,7 @@
             "ForwardedValues": {
               "QueryString": false
             },
-            "TargetOriginId": "webpage",
+            "TargetOriginId": {"Ref":"PipelineId"},
             "ViewerProtocolPolicy": "allow-all"
           }
         }
